@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms & Conditions | Influcare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="landing-page-wrapper">
+    <div class="bg-orbs"></div>
+    
+    <!-- Nav -->
+    <nav id="nav">
+      <a class="wordmark" href="/">Influ<span>care</span></a>
+      <div class="nav-right">
+        <a class="nav-link" href="/services">Our Services</a>
+        <a class="nav-link" href="/privacy">Privacy</a>
+        <a class="btn-primary" href="#contact-modal">Contact Us</a>
+      </div>
+    </nav>
+
+    <div class="legal-container">
+      <div class="header">
+        <div class="header-label">Legal</div>
+        <h1>Terms & Conditions</h1>
+        <p>Last updated: October 2026</p>
+      </div>
+
+      <div class="section">
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing and using the services provided by Influcare, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services.</p>
+      </div>
+
+      <div class="section">
+        <h2>2. Services Description</h2>
+        <p>Influcare provides digital marketing, social media management, influencer outreach, SEO optimization, and related consultancy services. The specific deliverables, timelines, and pricing will be outlined in a separate agreement or proposal provided to the client.</p>
+      </div>
+
+      <div class="section">
+        <h2>3. Payment Terms</h2>
+        <p>Clients agree to pay the fees for services as set forth in the respective service agreement. Payments are due upon receipt of invoice unless otherwise specified. We reserve the right to suspend services for overdue accounts.</p>
+      </div>
+      
+      <div class="section">
+        <h2>4. Agency Commission</h2>
+        <p>For Influencer Marketing campaigns, a standard 5% agency commission will be applied on top of the allocated budget unless otherwise negotiated in writing.</p>
+      </div>
+
+      <div class="section">
+        <h2>5. Limitation of Liability</h2>
+        <p>Influcare shall not be liable for any indirect, incidental, special, consequential or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your use of our services.</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/services">Services</a>
+        <a href="/termsandcondition">Terms</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+      <div class="footer-copy">&copy; <span id="year">2026</span> Influcare. Connecting Audiences.</div>
+    </footer>
+  </div>
+
+  <!-- Contact Modal -->
+  <div class="modal-overlay" id="contactModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeModal">&times;</button>
+      <div id="formContainer">
+        <div class="modal-header">
+          <h2>Contact Us</h2>
+          <p>Fill out the form below and we'll get back to you shortly.</p>
+        </div>
+        <form id="contactForm" class="contact-form">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" required placeholder="John Doe" pattern="[A-Za-z ]+" title="Only letters and spaces are allowed">
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required placeholder="john@example.com">
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" required placeholder="9876543210" pattern="[0-9]{3,15}" title="Only numbers, between 3 and 15 digits" minlength="3" maxlength="15">
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" required placeholder="Tell us about your brand..."></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="margin-top: 1rem; width: 100%;">Submit Request</button>
+        </form>
+      </div>
+      <div id="successMessage" class="success-message">
+        <h3>Thank You!</h3>
+        <p>Your request has been submitted successfully. We will reach out to you soon.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      // Contact Modal Logic
+      const modal = document.getElementById('contactModal');
+      const closeBtn = document.getElementById('closeModal');
+      const contactForm = document.getElementById('contactForm');
+      const formContainer = document.getElementById('formContainer');
+      const successMessage = document.getElementById('successMessage');
+      
+      const contactLinks = document.querySelectorAll('a[href="#contact-modal"], a[href="mailto:hello@influcare.com"]');
+      contactLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          modal.classList.add('active');
+          // Reset form state if reopened
+          formContainer.style.display = 'block';
+          successMessage.style.display = 'none';
+          contactForm.reset();
+        });
+      });
+
+      closeBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+
+      contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Show success
+        formContainer.style.display = 'none';
+        successMessage.style.display = 'block';
+      });
+
+      // Set current year
+      const yearEl = document.getElementById("year");
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+    });
+  </script>
+</body>
+</html>
