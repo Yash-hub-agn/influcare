@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processing Payment...</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #161616;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      flex-direction: column;
+    }
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-left-color: #f59e0b; /* Razorpay orange */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .status { font-size: 1.1rem; font-weight: 500; }
+    .sub-status { font-size: 0.9rem; color: #a1a1aa; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="loader"></div>
+  <div class="status" id="status-text">Opening Secure Payment Gateway...</div>
+  <div class="sub-status" id="sub-status-text">Please wait, do not close this window.</div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const amount = urlParams.get('amount');
+      const keyId = urlParams.get('key_id');
+      const orderId = urlParams.get('order_id');
+      const currency = urlParams.get('currency') || 'INR';
+      const returnUrl = urlParams.get('return_url') || 'https://speakesy.club/recharge';
+      
+      const statusText = document.getElementById('status-text');
+      const subStatusText = document.getElementById('sub-status-text');
+
+      if (!amount || !keyId || !orderId) {
+        statusText.innerText = 'Payment Failed';
+        subStatusText.innerText = 'Invalid secure parameters. Redirecting back...';
+        setTimeout(() => { window.location.href = returnUrl; }, 2000);
+        return;
+      }
+
+      try {
+        const options = {
+          key: keyId,
+          amount: amount,
+          currency: currency,
+          name: 'The Speakesy',
+          description: 'The Speakesy Wallet Recharge',
+          order_id: orderId,
+          theme: { color: '#F59E0B' },
+          handler: function (response) {
+            statusText.innerText = 'Payment Processed securely!';
+            subStatusText.innerText = 'Redirecting you back to verify...';
+            document.querySelector('.loader').style.display = 'block';
+
+            // Securely send only Razorpay parameters back to Speakesy.club to be verified by backend
+            const redirectUrl = new URL(returnUrl);
+            redirectUrl.searchParams.append('razorpay_order_id', response.razorpay_order_id);
+            redirectUrl.searchParams.append('razorpay_payment_id', response.razorpay_payment_id);
+            redirectUrl.searchParams.append('razorpay_signature', response.razorpay_signature);
+            
+            window.location.href = redirectUrl.toString();
+          },
+          modal: {
+            ondismiss: function () {
+              statusText.innerText = 'Payment Cancelled';
+              subStatusText.innerText = 'Redirecting back...';
+              setTimeout(() => { window.location.href = returnUrl; }, 1000);
+            }
+          }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response) {
+          const redirectUrl = new URL(returnUrl);
+          redirectUrl.searchParams.append('error', response.error.description);
+          window.location.href = redirectUrl.toString();
+        });
+        
+        document.querySelector('.loader').style.display = 'none';
+        rzp.open();
+
+      } catch (err) {
+        statusText.innerText = 'Error';
+        subStatusText.innerText = err.message + '. Redirecting back...';
+        setTimeout(() => { window.location.href = returnUrl; }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>
